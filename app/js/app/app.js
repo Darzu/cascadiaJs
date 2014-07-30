@@ -12,6 +12,7 @@ define([
   "jquery",
   "underscore",
   "backbone",
+  "backbone.localStorage",
 
   // Import and compile a HBS template.
   // For real application, remove this import (and the real file) and replace
@@ -19,31 +20,26 @@ define([
   // application. Likely this means a collection and router.
   "hbs!app/templates/notes",
   "hbs!app/templates/note",
+  "app/models/notes",
+  "app/models/note",
 
   // Polyfill JSON for old browsers.
-  "json2",
-  "backbone.localStorage"
+  "json2"
 ], function (
   $,
   _,
   Backbone,
+  BackboneLocalStorage,
   notesTmpl,
-  noteTmpl
+  noteTmpl,
+  NotesCollection,
+  NoteModel
 ) {
   "use strict";
 
   // --------------------------------------------------------------------------
   // Backbone.js Components.
   // --------------------------------------------------------------------------
-
-  var NoteModel = Backbone.Model.extend({
-    defaults: { title: "", text: "*Add Note!*" }
-  });
-
-  var NotesCollection = Backbone.Collection.extend({
-    model: NoteModel,
-    localStorage: new Backbone.LocalStorage("bb-col-demo")
-  });
 
   var notesCollection = new NotesCollection();
 
