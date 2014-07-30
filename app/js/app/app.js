@@ -38,7 +38,18 @@ define([
 
   // Hack an `id` for fetch routing.
   var noteModel = new NoteModel({ id: 1 });
-  console.log("BEFORE", JSON.stringify(noteModel.toJSON())); 
+  console.log("BEFORE", JSON.stringify(noteModel.toJSON()));
+
+  var NotesCollection = Backbone.Collection.extend({
+    model: NoteModel,
+    url: "/notes"
+  });
+
+  var notesCollection = new NotesCollection();
+  notesCollection.fetch().done(function () {
+    console.log("Fetched: " +
+                JSON.stringify(notesCollection.toJSON()));
+  });
 
   // --------------------------------------------------------------------------
   // Application Bootstrap
