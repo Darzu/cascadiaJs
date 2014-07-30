@@ -30,74 +30,26 @@ define([
   // --------------------------------------------------------------------------
   // Backbone.js Components.
   // --------------------------------------------------------------------------
-  // Let's write a very simple Backbone model, and bind that with a template
-  // to a view.
 
-  // Backbone.js Model
-  //
-  // The model contains the data. Typically this is sync'ed with remote or
-  // local storage.
-  var HelloModel = Backbone.Model.extend({
-    // Backend REST url prefix.
-    urlRoot: "/hello",
-
-    // Default values.
-    defaults: {
-      id: 0,
-      message: "I am the default message"
-    }
+  var NoteModel = Backbone.Model.extend({
+    urlRoot: "/notes", // :id
+    defaults: { title: "", text: "*Add Note!*" }
   });
 
-  // Backbone.js View
-  //
-  // The view binds model (or collection) data to a Handlebars template and
-  // attaches that to the page HTML. It also controls other behaviors.
-  var HelloView = Backbone.View.extend({
-
-    // HTML element to attach to.
-    el: ".hello",
-
-    // Model data to use (unless one is passed to constructor).
-    model: new HelloModel(),
-
-    // Template to bind data to.
-    template: helloTmpl,
-
-    // Function to actually bind all of the above together.
-    render: function () {
-      // Get model JSON data,
-      // Add to template and render,
-      // Replace existing element HTML!
-      this.$el.html(this.template(this.model.toJSON()));
-
-      // `render` should always return `this` by convention.
-      return this;
-    }
-  });
+  // Hack an `id` for fetch routing.
+  var noteModel = new NoteModel({ id: 1 });
+  console.log("BEFORE", JSON.stringify(noteModel.toJSON())); 
 
   // --------------------------------------------------------------------------
   // Application Bootstrap
   // --------------------------------------------------------------------------
-  // Actually wire up and kick everything off!
-  //
-  // **Note**: The `app.js` file is usually just comprised of **imports**
-  // of the individual Backbone.js components above and the below function
-  // on page load.
+  
   $(function () {
-    // Now instantiate our view and render!
-    var helloView = new HelloView();
-
-    // Update the model data. Without, renders `defaults.message`.
-    helloView.model.fetch()
-      .done(function () {
-        // Success!
-        helloView.render();
-      })
-      .fail(function (jqXHR, textStatus) {
-        // Failure!
-        var err = jqXHR.responseText || jqXHR.statusText || textStatus;
-        helloView.$el.html(
-          "<div>Model fetch failed with: <code>" + err + "</code></div>");
+    $("body").append($("<h2>Hello CascadiaJS</h2>"))
+    noteModel
+      .fetch()
+      .done(function() {
+        console.log("AFTER", JSON.stringify(noteModel.toJSON())); 
       });
   });
 });

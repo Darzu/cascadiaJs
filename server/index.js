@@ -19,6 +19,14 @@ app.get("/notes/:id", function (req, res) {
   });
 });
 
+app.get("/notes", function (req, res) {
+  res.json([ 
+    {"id":1,"title":"title # 1","text":"text # 1"},
+    {"id":2,"title":"title # 2","text":"text # 2"},
+    {"id":3,"title":"title # 3","text":"text # 3"} 
+  ]);
+});
+
 // Other configuration and startup.
 app.use(bodyParser());
 app.listen(PORT);
