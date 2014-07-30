@@ -10,20 +10,25 @@
  */
 define([
   "jquery",
+  "underscore",
   "backbone",
 
   // Import and compile a HBS template.
   // For real application, remove this import (and the real file) and replace
   // with imports for your Backbone components needed to bootstrap the full
   // application. Likely this means a collection and router.
-  "hbs!app/templates/hello",
+  "hbs!app/templates/notes",
+  "hbs!app/templates/note",
 
   // Polyfill JSON for old browsers.
-  "json2"
+  "json2",
+  "backbone.localStorage"
 ], function (
   $,
+  _,
   Backbone,
-  helloTmpl
+  notesTmpl,
+  noteTmpl
 ) {
   "use strict";
 
@@ -32,35 +37,39 @@ define([
   // --------------------------------------------------------------------------
 
   var NoteModel = Backbone.Model.extend({
-    urlRoot: "/notes", // :id
     defaults: { title: "", text: "*Add Note!*" }
   });
 
-  // Hack an `id` for fetch routing.
-  var noteModel = new NoteModel({ id: 1 });
-  console.log("BEFORE", JSON.stringify(noteModel.toJSON()));
-
   var NotesCollection = Backbone.Collection.extend({
     model: NoteModel,
-    url: "/notes"
+    localStorage: new Backbone.LocalStorage("bb-col-demo")
   });
 
   var notesCollection = new NotesCollection();
-  notesCollection.fetch().done(function () {
-    console.log("Fetched: " +
-                JSON.stringify(notesCollection.toJSON()));
-  });
+
+  // TODO: Print out notes containing an "o" in `text`
+  // HINT: There's a useful underscore method
 
   // --------------------------------------------------------------------------
   // Application Bootstrap
   // --------------------------------------------------------------------------
   
   $(function () {
-    $("body").append($("<h2>Hello CascadiaJS</h2>"))
-    noteModel
-      .fetch()
-      .done(function() {
-        console.log("AFTER", JSON.stringify(noteModel.toJSON())); 
-      });
+    
+    notesCollection.localStorage._clear();
+
+     _.each(["Hi", "Hello", "Hola"], function (msg) {
+      notesCollection.create({ title: msg, text: msg });
+    });
+
+    notesCollection.fetch({ reset: true }); // Use existing models!
+
+    //single notes
+    var note = notesCollection.at(1);
+    $("body").append($(noteTmpl(note.toJSON())));
+
+    //all notes
+    $("body").append($(notesTmpl(notesCollection.toJSON())));
+    
   });
 });
