@@ -53,24 +53,37 @@ define([
   var NoteView = Backbone.View.extend({
     el: "#note",
     template: noteTmpl,
+    events: {
+      "click": "clicked"
+    },
     initialize: function() {
       if (!this.model) {throw "No model!"}
       this.listenTo(this.model, "change", this.render);
     },
     render: function() {
       this.$el.html(this.template(this.model.toJSON()));
+    },
+    clicked: function(ev) {
+      Backbone.history.navigate("", {trigger: true});
     }
   });
 
   var NotesView = Backbone.View.extend({
     el: "#notes",
     template: notesTmpl,
+    events: {
+      "click li": "clicked"
+    },
     initialize: function() {
       if (!this.collection) {throw "No collection!"}
       this.listenTo(this.collection, "change", this.render);
     },
     render: function() {
       this.$el.html(this.template(this.collection.toJSON()));
+    },
+    clicked: function(ev) {
+      var id = $(ev.currentTarget).index().toString();
+      Backbone.history.navigate(id, {trigger: true});
     }
   });
 
