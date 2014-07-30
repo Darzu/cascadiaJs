@@ -47,8 +47,61 @@ define([
 
   var notesCollection = new NotesCollection();
 
-  // TODO: Print out notes containing an "o" in `text`
-  // HINT: There's a useful underscore method
+  var $note = $("<div><h1>One Note</h1><div id='note' /></div>");
+  var $notes = $("<div><h1>My Notes</h1><div id='notes' /></div>");
+
+  var NoteView = Backbone.View.extend({
+    el: "#note",
+    template: noteTmpl,
+    initialize: function() {
+      if (!this.model) {throw "No model!"}
+      this.listenTo(this.model, "change", this.render);
+    },
+    render: function() {
+      this.$el.html(this.template(this.model.toJSON()));
+    }
+  });
+
+  var NotesView = Backbone.View.extend({
+    el: "#notes",
+    template: notesTmpl,
+    initialize: function() {
+      if (!this.collection) {throw "No collection!"}
+      this.listenTo(this.collection, "change", this.render);
+    },
+    render: function() {
+      this.$el.html(this.template(this.collection.toJSON()));
+    }
+  });
+
+  var Router = Backbone.Router.extend({
+    routes: {
+      "": "notes",
+      ":id": "note"
+    },
+    notes: function() {
+      //all notes
+      $("body").html($notes);
+
+      var notesView = new NotesView({
+        collection: notesCollection
+      });
+      notesView.render();
+    },
+    note: function(id) {
+      //single notes
+      $("body").html($note);
+
+      var noteView = new NoteView({
+        model: notesCollection.at(id)
+      });
+      noteView.render();
+    }
+  });
+
+  var router = new Router();
+
+  Backbone.History.started || Backbone.history.start();
 
   // --------------------------------------------------------------------------
   // Application Bootstrap
@@ -63,13 +116,6 @@ define([
     });
 
     notesCollection.fetch({ reset: true }); // Use existing models!
-
-    //single notes
-    var note = notesCollection.at(1);
-    $("body").append($(noteTmpl(note.toJSON())));
-
-    //all notes
-    $("body").append($(notesTmpl(notesCollection.toJSON())));
     
   });
 });
